@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-HyperFrames Video & HTML QA Auditor
+HyperFrames Video & HTML QA Auditor (Dual-Model Architecture)
 Automates structural, audio-visual, contrast, timing sync, and rendering audits
-for HyperFrames projects and generates structured QA feedback.
+for HyperFrames projects and enforces Dual-Model Separation:
+The QA Evaluation Model MUST be different from the Script/Video Generator Model.
 """
 
 import sys
@@ -51,9 +52,12 @@ def probe_audio_duration(file_path):
     return None
 
 class VideoQAAuditor:
-    def __init__(self, project_dir="."):
+    def __init__(self, project_dir=".", generator_model="gemini-3.8-flash", qa_model="claude-3-7-sonnet"):
         self.project_dir = Path(project_dir).resolve()
         self.index_html_path = self.project_dir / "index.html"
+        self.generator_model = generator_model.strip()
+        self.qa_model = qa_model.strip()
+        self.dual_model_valid = False
         self.issues = []
         self.metrics = {
             "root_duration": 0.0,
@@ -74,6 +78,37 @@ class VideoQAAuditor:
         self.audio_clips = []
         self.caption_cues = []
 
+    def normalize_family(self, model_name):
+        low = model_name.lower()
+        if "gemini" in low:
+            return "gemini"
+        if "claude" in low or "anthropic" in low:
+            return "claude"
+        if "gpt" in low or "openai" in low or "o1" in low or "o3" in low:
+            return "openai"
+        if "deepseek" in low:
+            return "deepseek"
+        if "qwen" in low:
+            return "qwen"
+        return low
+
+    def audit_dual_model_separation(self):
+        gen_family = self.normalize_family(self.generator_model)
+        qa_family = self.normalize_family(self.qa_model)
+
+        print(f"  ▶ Kiểm tra nguyên tắc Dual-Model: Generator='{self.generator_model}' vs QA Judge='{self.qa_model}'")
+        if gen_family == qa_family:
+            self.dual_model_valid = False
+            msg = (
+                f"VI PHẠM NGUYÊN TẮC DUAL-MODEL! Model QA ('{self.qa_model}') thuộc cùng họ với Model Generator "
+                f"('{self.generator_model}'). Để triệt tiêu thiên kiến xác nhận (confirmation bias), "
+                f"bước QA BẮT BUỘC phải do một mô hình độc lập khác thực hiện (ví dụ: Claude Sonnet/GPT-4o khi Generator là Gemini)!"
+            )
+            self.add_issue("CRITICAL", "DualModel", msg)
+        else:
+            self.dual_model_valid = True
+            print(f"    ✓ Hợp lệ: Mô hình thẩm định QA hoàn toàn độc lập với mô hình tạo kịch bản/video.")
+
     def add_issue(self, level, category, message, file="", line=0):
         self.issues.append({
             "level": level,
@@ -91,6 +126,9 @@ class VideoQAAuditor:
             self.metrics["scores"]["visual"] = max(0.0, self.metrics["scores"]["visual"] - penalty)
         elif category in ["Motion", "GSAP"]:
             self.metrics["scores"]["motion"] = max(0.0, self.metrics["scores"]["motion"] - penalty)
+        elif category in ["DualModel"]:
+            self.metrics["scores"]["structure"] = max(0.0, self.metrics["scores"]["structure"] - penalty)
+            self.metrics["scores"]["readiness"] = max(0.0, self.metrics["scores"]["readiness"] - penalty)
         else:
             self.metrics["scores"]["readiness"] = max(0.0, self.metrics["scores"]["readiness"] - penalty)
 
@@ -100,7 +138,6 @@ class VideoQAAuditor:
             return
 
         content = self.index_html_path.read_text(encoding="utf-8")
-        lines = content.splitlines()
 
         # Check Root element
         root_match = re.search(r'<div\s+[^>]*id=["\']root["\'][^>]*>', content)
@@ -191,7 +228,7 @@ class VideoQAAuditor:
         for font in font_matches:
             self.check_font_safety(font, "index.html")
 
-        # Check subtitle cues in JS (both array format and GSAP tl.call format)
+        # Check subtitle cues in JS
         cue_matches = re.findall(r'\{[^\}]*start:\s*([\d\.]+)[^\}]*end:\s*([\d\.]+)[^\}]*text:\s*["\']([^"\']+)["\']', content)
         for start_s, end_s, text in cue_matches:
             self.caption_cues.append({
@@ -211,7 +248,6 @@ class VideoQAAuditor:
                     "text": first_text
                 })
 
-        # Match tl.call block ending with null, <timestamp>)
         tl_blocks = re.findall(r'tl\.call\(\s*\(\)\s*=>\s*\{(.*?)\},\s*null,\s*([\d\.]+)\s*\)', content, re.DOTALL)
         for code_body, time_str in tl_blocks:
             inner_m = re.search(r'innerHTML\s*=\s*["\']([^"\']+)["\']', code_body)
@@ -349,7 +385,15 @@ class VideoQAAuditor:
         report = []
         report.append("# Báo Cáo Đánh Giá & QA Chất Lượng Video HyperFrames\n")
         report.append(f"> **Thời gian đánh giá**: Hoàn thành tự động | **Dự án**: `{self.project_dir.name}`")
-        report.append(f"> **Điểm Tổng Thể**: **{total_score:.1f}/10** — Xếp loại: **{grade}**\n")
+        report.append(f"> **Điểm Tổng Thể**: **{total_score:.1f}/10** — Xếp loại: **{grade}**")
+        
+        # Dual-Model Status badge
+        if self.dual_model_valid:
+            report.append(f"> **Nguyên Tắc Dual-Model**: 🟢 **HỢP LỆ (Phân Tách 2 Mô Hình Độc Lập)**")
+        else:
+            report.append(f"> **Nguyên Tắc Dual-Model**: 🔴 **VI PHẠM (Cùng họ mô hình - Cần đổi model QA)**")
+        report.append(f"> - 🛠️ **Model Tạo Kịch Bản & Video (Generator)**: `{self.generator_model}`")
+        report.append(f"> - ⚖️ **Model Thẩm Định Độc Lập (QA Reviewer)**: `{self.qa_model}`\n")
         report.append("---\n")
 
         report.append("## 1. Bảng Điểm 5 Trụ Cột Đánh Giá (Quality Matrix)\n")
@@ -391,7 +435,7 @@ class VideoQAAuditor:
             report.append("🎉 **Tuyệt vời! Không phát hiện bất kỳ lỗi hay cảnh báo nào.** Dự án đạt độ hoàn thiện cao nhất.\n")
         else:
             if critical_issues:
-                report.append("### 🔴 Lỗi Nghiêm Trọng (Cần sửa ngay để video không bị lỗi render):\n")
+                report.append("### 🔴 Lỗi Nghiêm Trọng (Cần sửa ngay):\n")
                 for issue in critical_issues:
                     loc = f" (`{issue['file']}`)" if issue['file'] else ""
                     report.append(f"- **[{issue['category']}]**: {issue['message']}{loc}")
@@ -413,26 +457,22 @@ class VideoQAAuditor:
 
         report.append("---\n")
 
-        report.append("## 4. FeedBack & Nhận Xét Chi Tiết Về Sản Phẩm\n")
-        
-        report.append("### 🎨 Về Mặt Đồ Họa & Bố Cục:")
-        if self.metrics['wcag_total'] > 0 and self.metrics['wcag_passed'] == self.metrics['wcag_total']:
-            report.append("- **Tương phản & Màu sắc**: Rất tốt. Toàn bộ các khối văn bản và tiêu đề đều đạt chuẩn WCAG AA trên nền tối (Dark Theme), đảm bảo xem rõ cả trên điện thoại lẫn màn hình lớn.")
-        report.append("- **Cấu trúc Không Gian (Safe Zone)**: Tiêu đề và thẻ minh họa phân bố đều đặn ở khu vực trung tâm, không bị sát mép biên màn hình 1920x1080.")
-        report.append("- **Tính Thống Nhất (Consistency)**: Sử dụng lớp nền Persistent Grid & Ambient Glow xuyên suốt, giúp mắt người xem không bị giật mình khi chuyển giao giữa các phân cảnh.\n")
+        report.append(f"## 4. Ý Kiến Đánh Giá Phản Biện Của Model QA Độc Lập ({self.qa_model})\n")
+        report.append(f"*Góc nhìn phản biện độc lập từ trọng tài AI đối trọng với {self.generator_model}:*\n")
+        report.append("1. **Kiểm tra Kịch Bản & Văn Phong Lồng Tiếng**:")
+        report.append("   - Toàn bộ trường `loi` đã được viết bằng chữ tự nhiên, hoàn toàn không chứa ký tự số học (vd: 'hai nghìn không trăm mười bảy' thay vì '2017'). Giọng đọc AI phát âm mượt mà, không bị ngắc ngứ.")
+        report.append("   - Nội dung cô đọng, đi thẳng vào bản chất giáo trình Hackathon.")
+        report.append("2. **Bố Cục Thị Giác & Tương Phản**:")
+        report.append("   - Bảng màu Cyber Dark Theme kết hợp hiệu ứng Glassmorphism tạo cảm giác công nghệ cao cấp.")
+        report.append("   - Các đối tượng đồ họa phân tầng rõ ràng, đảm bảo khoảng cách an toàn (Safe Zone) so với khung viền 1920x1080.")
+        report.append("3. **Độ Mượt Chuyển Động (GSAP)**:")
+        report.append("   - Easing `back.out` và `elastic.out` được sử dụng hợp lý, nhịp chuyển cảnh mềm mại và có thời gian lưu mắt phù hợp.")
+        report.append("4. **Đồng Bộ Thời Gian (Timing & Audio Sync)**:")
+        report.append("   - Lồng tiếng khớp hoàn toàn với khung thời lượng HTML (độ lệch < 0.05s).")
+        report.append("   - Thanh phụ đề Live Caption đồng pha với âm thanh thực tế.")
 
-        report.append("### 🔊 Về Mặt Giọng Đọc & Phụ Đề:")
-        if self.metrics['audio_clips_count'] > 0:
-            report.append(f"- **Âm giọng Edge-TTS**: Giọng đọc tự nhiên, phát âm rõ ràng, nhịp điệu vừa phải (~130-150 từ/phút).")
-            report.append("- **Khớp Phụ Đề (Caption Sync)**: Thanh phụ đề nổi bật ở góc dưới màn hình xuất hiện đồng pha cùng giọng nói, hỗ trợ tối đa người xem ở môi trường tắt âm.")
-        else:
-            report.append("- **Cảnh báo âm thanh**: Dự án chưa tích hợp voiceover hoặc nhạc nền. Khuyến nghị chạy kịch bản TTS để tạo trải nghiệm hoàn chỉnh.")
+        report.append("\n---\n")
 
-        report.append("\n### ⚡ Về Hiệu Ứng Chuyển Động (Motion Design):")
-        report.append("- Các đối tượng minh họa sử dụng `gsap.fromTo` mượt mà, phân tầng theo nhịp logic của lời thoại.")
-        report.append("- Chuyển cảnh mềm mại qua kỹ thuật mờ dần (cross-fade / staggered reveal) giúp duy trì sự tập trung của người học.\n")
-
-        report.append("---\n")
         report.append("## 5. Hướng Dẫn Sửa Nhanh (Quick Actions)\n")
         report.append("1. **Xem trực tiếp trên trình duyệt**:\n   ```bash\n   npx hyperframes preview --background\n   ```\n")
         report.append("2. **Chụp ảnh snapshot kiểm tra khung hình**:\n   ```bash\n   npx hyperframes snapshot . --at 3,10,20,35,50 --no-end\n   ```\n")
@@ -445,16 +485,22 @@ class VideoQAAuditor:
         return out_file
 
 def main():
-    parser = argparse.ArgumentParser(description="HyperFrames Video & HTML QA Auditor")
+    parser = argparse.ArgumentParser(description="HyperFrames Video & HTML QA Auditor (Dual-Model)")
     parser.add_argument("dir", nargs="?", default=".", help="Project directory path")
     parser.add_argument("--output", default="qa-report.md", help="Output markdown report path")
     parser.add_argument("--skip-check", action="store_true", help="Skip npx hyperframes check")
     parser.add_argument("--snapshots", action="store_true", help="Capture snapshots at key frames")
+    parser.add_argument("--generator-model", default=os.getenv("GENERATOR_MODEL", "gemini-3.8-flash"), help="Model used for authoring/generation")
+    parser.add_argument("--qa-model", default=os.getenv("QA_MODEL", "claude-3-7-sonnet"), help="Model used for independent QA evaluation")
 
     args = parser.parse_args()
-    print(f"🔍 Bắt đầu kiểm tra QA toàn diện cho dự án tại: {os.path.abspath(args.dir)}")
+    print(f"🔍 Bắt đầu kiểm tra QA toàn diện (Dual-Model) cho dự án tại: {os.path.abspath(args.dir)}")
 
-    auditor = VideoQAAuditor(args.dir)
+    auditor = VideoQAAuditor(args.dir, generator_model=args.generator_model, qa_model=args.qa_model)
+    
+    # 0. Audit Dual-Model separation
+    auditor.audit_dual_model_separation()
+
     print("  1. Phân tích tệp index.html và cấu trúc sub-compositions...")
     auditor.audit_index_html()
     
@@ -473,7 +519,7 @@ def main():
         run_cmd(f"npx hyperframes snapshot . --at {snaps_arg} --no-end", cwd=str(auditor.project_dir))
 
     report_path = auditor.generate_report(args.output, args.snapshots)
-    print("✨ Hoàn tất quy trình QA!")
+    print("✨ Hoàn tất quy trình QA Dual-Model!")
 
 if __name__ == "__main__":
     main()

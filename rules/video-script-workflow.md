@@ -99,9 +99,14 @@ npx hyperframes render -o <ten_video>.mp4
 ```
 Chạy render đa luồng, tự động xuất video MP4 1080p sắc nét và hoàn chỉnh.
 
-### Bước 4: Đánh Giá & QA Toàn Diện (Skill `video-qa`)
+### Bước 4: Đánh Giá & QA Toàn Diện Với Mô Hình Độc Lập (Skill `video-qa`)
+> **Nguyên Tắc Bắt Buộc**: Model thực hiện QA PHẢI là mô hình độc lập khác với model đã tạo kịch bản/video (ví dụ: Generator là Gemini thì QA Model phải là Claude Sonnet hoặc GPT-4o).
+
 ```bash
-python .agents/skills/video-qa/scripts/qa_audit.py . --output qa-report.md
+python .agents/scoutx-skills/skills/video-qa/scripts/qa_audit.py . \
+  --generator-model "gemini-3.8-flash" \
+  --qa-model "claude-3-7-sonnet" \
+  --output qa-report.md
 ```
-Tự động quét cấu trúc HTML, kiểm tra độ lệch âm thanh vs phụ đề, xác minh WCAG AA và sinh báo cáo phản hồi (Feedback report) chi tiết.
+Tự động quét cấu trúc HTML, kiểm tra độ lệch âm thanh vs phụ đề, xác minh WCAG AA, rà soát nguyên tắc phân tách 2 mô hình và sinh báo cáo phản hồi khách quan (Feedback report) chi tiết.
 
