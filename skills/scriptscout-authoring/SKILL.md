@@ -61,10 +61,26 @@ Chia nhỏ bài giảng thành các nội dung lớn. Với MỖI nội dung l�
 
 ---
 
+## 🎨 QUY CHUẨN THIẾT KẾ THỊ GIÁC: VINUNI ACADEMIC LIGHT THEME
+
+Mọi kịch bản và composition video khi xây dựng trong bất kỳ môi trường IDE nào (Cursor, Windsurf, VS Code, v.v.) **BẮT BUỘC** áp dụng phong cách thiết kế **VinUni Academic Light Theme** (xem chi tiết tại `references/theme-guidelines.md`):
+- **Nền chính**: Nền trắng sáng `#ffffff` / `#f8fafc` kèm lưới kỹ thuật siêu nhẹ `rgba(15, 23, 42, 0.04)`.
+- **Thanh thương hiệu đỉnh (Header)**:
+  - Trái: Kicker đỏ VinUni `#c5221f` chữ in hoa: `NGÀY 01 · AI, MACHINE LEARNING, GENERATIVE AI & LLM`.
+  - Phải: Dấu chấm đỏ tròn + `• VinUni · AI in Action 20K`.
+- **Tiêu đề chính**: Xanh Navy học thuật `#0c2340`, sắc nét và trang trọng.
+- **Thẻ nội dung (Cards)**: Nền xanh Ice-Blue nhạt `#f0f6fc`, viền xanh sắc nét `#2563eb`, bo góc 12px – 16px.
+- **Văn bản nội dung**: Màu than tối `#1e293b` (đảm bảo 100% đạt chuẩn tương phản WCAG AA).
+- **Thanh phụ đề nổi (Floating Pill)**: Nền kính trắng sáng `rgba(255, 255, 255, 0.96)`, viền xám mảnh, chữ xanh navy `#0c2340`.
+- **Dẫn chứng khoa học**: Tài liệu bài báo nghiên cứu (Paper CVPR, NeurIPS) hiển thị trên nền sáng có viền xanh/vàng thanh lịch, tạo cảm giác tài liệu học thuật thực tế.
+
+---
+
 ## Hành Động Cuối
 - Kiểm tra lại các file hình ảnh trong `assets/evidence/` đảm bảo tồn tại và sắc nét.
-- Đảm bảo các sub-composition video khi dựng sẽ nhúng các ảnh dẫn chứng này qua thẻ `<img>` với hiệu ứng zoom/tilt 3D đẹp mắt.
+- Đảm bảo các sub-composition video khi dựng sẽ nhúng các ảnh dẫn chứng này qua thẻ `<img>` với hiệu ứng zoom/tilt đẹp mắt.
+- Tuân thủ nghiêm ngặt bảng màu VinUni Academic Light Theme khi viết CSS cho sub-compositions.
 - Gợi ý người dùng chạy bước Render cho từng kịch bản.
 
 ---
-*Xem cấu trúc chi tiết tại `references/schema-hackathon.md`.*
+*Xem cấu trúc chi tiết tại `references/schema-hackathon.md` và quy chuẩn thẩm mỹ tại `references/theme-guidelines.md`.*
