@@ -1,4 +1,4 @@
-# Tham Chiếu Lược Đồ JSON (Hackathon Schema)
+# Tham Chiếu Lược Đồ JSON (Hackathon Schema - Tích Hợp Hình Ảnh Dẫn Chứng)
 
 ## 1. Schema: `hackathon-ho-so-nguon/1`
 Dùng để mô tả các nguồn dữ liệu và thông tin trích xuất đối chiếu chéo ($\ge 2$ nguồn độc lập).
@@ -59,8 +59,8 @@ Dùng để mô tả các nguồn dữ liệu và thông tin trích xuất đố
 
 ---
 
-## 2. Schema: `hackathon-kich-ban/1` (Bắt Buộc Đưa Dẫn Chứng Vào Kịch Bản)
-Dùng để mô tả kịch bản video, bắt buộc tích hợp trực tiếp dẫn chứng vào lời thoại và nhãn nguồn video.
+## 2. Schema: `hackathon-kich-ban/1` (Bắt Buộc Có Hình Ảnh Dẫn Chứng Thực Tế)
+Dùng để mô tả kịch bản video, bắt buộc có hình ảnh dẫn chứng (trang bìa paper, ảnh chụp web, biểu đồ, slide) để hiển thị trong video.
 
 ```json
 {
@@ -78,20 +78,29 @@ Dùng để mô tả kịch bản video, bắt buộc tích hợp trực tiếp 
       "kieu": "giang",
       "loi": "Theo bài báo khoa học kinh điển 'Attention Is All You Need' công bố tại hội nghị Niu-Ríp năm hai nghìn không trăm mười bảy của nhóm tác giả Google, kiến trúc Transformer đã ra đời và tạo nên bước ngoặt thay đổi toàn bộ ngành trí tuệ nhân tạo.",
       "chuTrenManHinh": "Transformer: Attention Is All You Need",
-      "yDoHinh": "Hiển thị tiêu đề bài báo NeurIPS 2017 và dòng thời gian phát sáng",
-      "nguon": ["tt-transformer-2017"],
-      "goiYHienNguon": "Vaswani et al. (2017), 'Attention Is All You Need', NeurIPS 2017 · arXiv:1706.03762"
+      "yDoHinh": "Hiển thị khung tài liệu 3D chứa trang bìa bài báo gốc NeurIPS 2017 và sơ đồ Attention phát sáng",
+      "hinhAnhDanChung": "assets/evidence/paper-attention-is-all-you-need.png",
+      "loaiDanChung": "trang-bia-paper",
+      "moTaDanChung": "Ảnh chụp trang bìa đầu tiên của bài báo Attention Is All You Need (NIPS 2017) với danh sách 8 tác giả",
+      "goiYHienNguon": "Vaswani et al. (2017), 'Attention Is All You Need', NeurIPS 2017 · arXiv:1706.03762",
+      "nguon": ["tt-transformer-2017"]
     }
   ]
 }
 ```
 
-### CÁC NGUYÊN TẮC BẮT BUỘC:
-1. **`loi` (Lời thoại voiceover)**:
-   - **BẮT BUỘC** lồng ghép dẫn chứng cụ thể: Tên tác giả (vd: giáo sư Phi Phi Li, nhóm nghiên cứu Google, Đại học Xtan-phớt...), Tên bài báo/nghiên cứu, Tên hội nghị/tạp chí uy tín (NeurIPS, CVPR, arXiv...).
-   - **TUYỆT ĐỐI KHÔNG chứa chữ số học**: Viết "hai nghìn không trăm mười bảy" thay vì "2017", "mười bốn triệu" thay vì "14 triệu".
-2. **`goiYHienNguon` (Nhãn trích dẫn học thuật)**:
-   - BẮT BUỘC có khi `nguon` không rỗng.
+### CÁC TRƯỜNG DẪN CHỨNG BẮT BUỘC:
+1. **`hinhAnhDanChung`**:
+   - Đường dẫn cục bộ tới tệp hình ảnh bằng chứng (định dạng PNG/JPG sắc nét, lưu trong `assets/evidence/`).
+   - Các loại hình ảnh:
+     * **Trang bìa Paper**: Ảnh chụp trang đầu tiên của file PDF bài báo khoa học (arXiv/CVPR/NeurIPS) chứa tiêu đề, tác giả, abstract.
+     * **Ảnh chụp Slide gốc**: Ảnh chụp trang slide bài giảng chứa thông tin tương ứng.
+     * **Ảnh chụp Web / Benchmark / Biểu đồ**: Ảnh chụp màn hình từ các website công cụ chính thức (OpenAI Tokenizer, OpenD5, v.v.).
+2. **`loaiDanChung`**:
+   - Các giá trị hợp lệ: `"trang-bia-paper"`, `"anh-chup-web"`, `"bieu-do"`, `"trang-slide"`, `"anh-san-pham"`.
+3. **`moTaDanChung`**:
+   - Mô tả ngắn gọn nội dung của hình ảnh dẫn chứng để người dựng video căn chỉnh bố cục thị giác.
+4. **`goiYHienNguon`**:
    - Định dạng chuẩn: `Tác giả (Năm), "Tên bài báo / Nghiên cứu", Hội nghị / Tạp chí · DOI/URL`.
-   - Renderer video sẽ đọc trường này để hiển thị citation badge hoặc subtitle source trực quan.
-3. **`nguon`**: Mảng ID trỏ chính xác về các mục trong `hoSo.thongTin`. Để `[]` nếu là câu kết hoặc câu chuyển ý.
+5. **`loi`**:
+   - Lồng ghép tên tác giả, tên công trình vào lời thoại văn nói tự nhiên, **TUYỆT ĐỐI KHÔNG chứa chữ số**.
