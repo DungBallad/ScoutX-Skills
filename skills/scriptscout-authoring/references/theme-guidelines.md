@@ -21,8 +21,19 @@ Tài liệu này định nghĩa hệ thống thiết kế thị giác chuẩn (*
    - Thay vì dán icon emoji, vẽ trực tiếp sơ đồ bản chất: vd các vòng tròn đồng tâm lồng nhau (Concentric Circles) cho các tầng bậc AI, đồ thị nơ-ron cho mạng sâu, hoặc luồng mũi tên cho quy trình.
 2. **Typography & Chỉ số vi mô (Technical Numbering & Monospace Badges)**:
    - Dùng các số đếm tối giản: `01`, `02`, `03`, `04`, `05` hoặc nhãn rút gọn `[ AI ]`, `[ ML ]`, `[ DL ]`, `[ GEN ]`, `[ LLM ]`.
-3. **Biểu tượng Vector SVG Monoline (Đơn sắc, Nét mảnh 1.5px – 2px)**:
-   - Nếu cần biểu tượng, chỉ dùng SVG nội tuyến đơn sắc, cùng tông màu nhận diện (`#0c2340`, `#2563eb`, `#c5221f`), không đổ màu gradient sặc sỡ như emoji điện thoại.
+3. **Bộ Icon UI/UX Hiện Đại — Khuyên dùng Lucide Icons (Hoặc Feather / Heroicons)**:
+   - Khi cần biểu tượng trực quan, **BẮT BUỘC** dùng bộ icon UI/UX chuẩn web/mobile như **Lucide Icons** (vector SVG 24x24, nét thanh `1.5px – 2px`, bo góc mềm `round`).
+   - Nhúng trực tiếp các thẻ `<svg>` của Lucide hoặc dùng thư viện Lucide CDN:
+     - `bot` / `cpu`: Trí tuệ nhân tạo, mô hình nền.
+     - `message-square`: Chatbot, hội thoại, trả lời khách.
+     - `file-text`: Phân tích tài liệu, tóm tắt báo cáo.
+     - `code`: Lập trình, sinh mã nguồn.
+     - `globe` / `languages`: Dịch thuật, ngôn ngữ toàn cầu.
+     - `mail`: Email, phân loại thư rác.
+     - `image`: Tạo ảnh, thị giác máy tính.
+     - `mic`: Micro phát âm, thanh phụ đề.
+     - `quote`: Trích dẫn danh ngôn, phát biểu học thuật.
+   - Màu sắc icon: Kế thừa mã màu hệ thống (`#2563eb`, `#0c2340`, `#c5221f`, `#059669`), tuyệt đối không dùng màu gradient sặc sỡ kiểu emoji.
 
 ---
 
