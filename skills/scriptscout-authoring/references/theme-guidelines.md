@@ -10,6 +10,22 @@ Tài liệu này định nghĩa hệ thống thiết kế thị giác chuẩn (*
 
 ---
 
+## 🚫 NGUYÊN TẮC BẮT BUỘC: TUYỆT ĐỐI KHÔNG SỬ DỤNG EMOJI (NO EMOJIS)
+
+> [!CAUTION]
+> **Tuyệt đối KHÔNG sử dụng ký tự Emoji hệ điều hành (như 🌐, 📊, 🧠, 🎨, ⚡, 💡, 💬, 💻, 🚀) trong toàn bộ video và kịch bản.**
+> Việc dùng Emoji khiến sản phẩm mang cảm giác "AI tạo sẵn, chất lượng thấp, thiếu chuyên nghiệp".
+
+### 3 Giải pháp thay thế chuẩn Studio:
+1. **Sơ đồ đồ họa / Hình học kỹ thuật (Schematics / Nested Diagrams)**:
+   - Thay vì dán icon emoji, vẽ trực tiếp sơ đồ bản chất: vd các vòng tròn đồng tâm lồng nhau (Concentric Circles) cho các tầng bậc AI, đồ thị nơ-ron cho mạng sâu, hoặc luồng mũi tên cho quy trình.
+2. **Typography & Chỉ số vi mô (Technical Numbering & Monospace Badges)**:
+   - Dùng các số đếm tối giản: `01`, `02`, `03`, `04`, `05` hoặc nhãn rút gọn `[ AI ]`, `[ ML ]`, `[ DL ]`, `[ GEN ]`, `[ LLM ]`.
+3. **Biểu tượng Vector SVG Monoline (Đơn sắc, Nét mảnh 1.5px – 2px)**:
+   - Nếu cần biểu tượng, chỉ dùng SVG nội tuyến đơn sắc, cùng tông màu nhận diện (`#0c2340`, `#2563eb`, `#c5221f`), không đổ màu gradient sặc sỡ như emoji điện thoại.
+
+---
+
 ## 2. Bảng Màu Chuẩn (Color Palette & CSS Variables)
 
 ```css

@@ -73,6 +73,7 @@ Mọi kịch bản và composition video khi xây dựng trong bất kỳ môi t
 - **Văn bản nội dung**: Màu than tối `#1e293b` (đảm bảo 100% đạt chuẩn tương phản WCAG AA).
 - **Thanh phụ đề nổi (Floating Pill)**: Nền kính trắng sáng `rgba(255, 255, 255, 0.96)`, viền xám mảnh, chữ xanh navy `#0c2340`.
 - **Dẫn chứng khoa học**: Tài liệu bài báo nghiên cứu (Paper CVPR, NeurIPS) hiển thị trên nền sáng có viền xanh/vàng thanh lịch, tạo cảm giác tài liệu học thuật thực tế.
+- **TUYỆT ĐỐI KHÔNG DÙNG EMOJI**: Không dùng emoji hệ điều hành (🌐, 🧠, 📊, 🎨, ⚡, 💡, 💬...). Thay thế hoàn toàn bằng: Sơ đồ tương tác (Concentric Circles / Diagrams), Chỉ số thập phân `01, 02..`, hoặc Vector SVG Monoline nét mảnh (1.5px – 2px).
 
 ---
 

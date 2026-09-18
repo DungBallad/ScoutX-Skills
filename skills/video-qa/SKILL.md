@@ -93,7 +93,7 @@ Khi đọc báo cáo `qa-report.md`, phân loại các vấn đề theo 3 mức 
 Model QA độc lập tổng hợp nhận xét theo 5 trụ cột tiêu chuẩn (thang điểm 10):
 1. **Kiến Trúc Mã & Tiêu Chuẩn HyperFrames** (Đạt chuẩn modular, clean code).
 2. **Đồng Bộ Âm Thanh & Phụ Đề** (Khớp tiếng, khớp chữ, nhịp dẫn tự nhiên).
-3. **Thẩm Mỹ Đồ Họa & Độ Tương Phản** (Tuân thủ chuẩn VinUni Academic Light Theme: nền sáng, kicker đỏ #c5221f, tiêu đề navy #0c2340, thẻ ice-blue #f0f6fc, đạt 100% chuẩn tương phản WCAG AA).
+3. **Thẩm Mỹ Đồ Họa & Độ Tương Phản** (Tuân thủ chuẩn VinUni Academic Light Theme: nền sáng, kicker đỏ #c5221f, tiêu đề navy #0c2340, thẻ ice-blue #f0f6fc; tuyệt đối KHÔNG chứa Emoji hệ điều hành, dùng đồ họa kỹ thuật/SVG/chỉ số tinh tế; đạt 100% chuẩn tương phản WCAG AA).
 4. **Hoạt Ảnh & Nhịp Chuyển Động** (Mượt mà, có phân tầng thị giác, thời gian lưu mắt hợp lý).
 5. **Độ Hoàn Thiện Tệp Xuất Bản** (Video MP4 1080p sắc nét, âm thanh rõ ràng).
 
